@@ -31,8 +31,8 @@ class SetText {
   static const String oke = "Oke";
   static const String a_ttlsuccess = "Sukses";
   static const String a_ttlfield = "Opps!";
-  static const String a_descsuccess = "Login berhasil";
-  static const String a_success = "Register berhasil";
+  static const String login_descsuccess = "Login berhasil";
+  static const String register_descsuccess = "Register berhasil";
 
   static const String a_descfield =
       "Data yang Anda masukkan belum lengkap, Mohon periksa kembali.";

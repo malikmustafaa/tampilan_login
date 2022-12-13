@@ -34,7 +34,7 @@ class ImgHeaderSplash extends StatelessWidget {
           alignment: Alignment.topRight,
           child: Container(
             child: Image.asset(
-              'assets/header_splash.png',
+              '',
             ),
           ),
         )
@@ -55,7 +55,7 @@ class ImgFooterSplash extends StatelessWidget {
           alignment: Alignment.bottomLeft,
           child: Container(
             child: Image.asset(
-              'assets/footer_splash.png',
+              '',
             ),
           ),
         )

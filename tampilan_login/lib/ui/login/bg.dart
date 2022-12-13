@@ -32,12 +32,12 @@ class ImgHeaderLogin extends StatelessWidget {
         Align(
           alignment: Alignment.topLeft,
           child: Image.asset(
-            'assets/header_login.png',
+            '',
           ),
         ),
         Positioned(
           top: size.height * 0.08,
-          right: size.width * 0.39,
+          right: size.width * 0.37,
           child: Image.asset("assets/logo.png", width: size.width * 0.25),
         ),
       ],

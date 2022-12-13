@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tampilan_login/constants/text.dart';
 import 'package:tampilan_login/ui/splash/splash_screen.dart';
-
 import 'constants/style_constant.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {

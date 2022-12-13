@@ -34,7 +34,7 @@ class ImgHeaderLogin extends StatelessWidget {
           // ignore: avoid_unnecessary_containers
           child: Container(
             child: Image.asset(
-              'assets/header_login.png',
+              '',
             ),
           ),
         ),

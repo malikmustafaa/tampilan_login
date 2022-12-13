@@ -1,6 +1,7 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, prefer_final_fields, unused_local_variable, avoid_print, unused_field
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:tampilan_login/constants/style_constant.dart';
 import 'package:tampilan_login/constants/text.dart';
@@ -15,11 +16,93 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _userIdController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   bool _obscureText = true;
   bool _isVisible = true;
   bool valUserId = false;
   bool valPassword = false;
+  bool _userIdError = false;
+  bool _passError = false;
   bool alertCheck = false;
+
+  String textEmpty = "mohon diisi";
+  String _textUserIdError = "";
+  String _textPassError = "";
+
+  bool _doValidate() {
+    Pattern pattern =
+        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?)*$";
+    RegExp regexUserID = RegExp(pattern as String);
+    RegExp regexPass = RegExp(r'^(?=.*?[a-z])(?=.*?[0-9]).{8,32}$');
+    bool _success = true;
+
+    String _userID = _userIdController.text;
+    String _pass = _passwordController.text;
+
+    if (_userID.isEmpty) {
+      setState(
+        () {
+          _textUserIdError = textEmpty;
+          _userIdError = true;
+        },
+      );
+      _success = false;
+    } else if (_userID.length < 8) {
+      setState(
+        () {
+          _userIdError = true;
+          _textUserIdError = "minimal 8 karakter";
+        },
+      );
+      _success = false;
+    } else {
+      setState(
+        () {
+          _userIdError = false;
+        },
+      );
+    }
+
+    if (_pass.isEmpty) {
+      setState(
+        () {
+          _textPassError = textEmpty;
+          _passError = true;
+        },
+      );
+      _success = false;
+    } else if (!regexPass.hasMatch(_pass)) {
+      setState(
+        () {
+          _passError = true;
+          _textPassError = " minimal 8 karakter kombinasi huruf dan angka";
+        },
+      );
+      _success = false;
+    } else {
+      setState(
+        () {
+          _passError = false;
+        },
+      );
+    }
+
+    return _success;
+  }
+
+  void _login() async {
+    if (_doValidate()) {
+      print("object === >");
+      // proses kirim data ke BE
+      _alert(alertCheck = true);
+    }
+  }
+
   TextEditingController userId = TextEditingController();
   TextEditingController password = TextEditingController();
   @override
@@ -58,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    SetText.user,
+                    SetText.userID,
                     textAlign: TextAlign.left,
                     style: pleacehStyle,
                   ),
@@ -66,12 +149,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   alignment: Alignment.center,
                   child: TextField(
-                    controller: userId,
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(' '),
+                      FilteringTextInputFormatter.allow(
+                        RegExp(
+                          (r'[a-z^A-Z^0-9]'),
+                        ),
+                      ),
+                      //Regex for accepting only alphanumeric characters
+                    ],
+                    controller: _userIdController,
+                    keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      hintText: SetText.user,
-                      errorText: valUserId
-                          ? SetText.user + '' + SetText.nextval
+                      hintText: SetText.userID,
+                      errorText: _userIdError
+                          ? SetText.user + ' ' + _textUserIdError
                           : null,
                       hintStyle: valStyle,
                       enabledBorder: UnderlineInputBorder(
@@ -93,11 +185,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   alignment: Alignment.center,
                   child: TextField(
-                    controller: password,
+                    controller: _passwordController,
                     decoration: InputDecoration(
                       hintText: SetText.password,
-                      errorText: valPassword
-                          ? SetText.password + '' + SetText.nextval
+                      errorText: _passError
+                          ? SetText.password + ' ' + _textPassError
                           : null,
                       hintStyle: valStyle,
                       enabledBorder: UnderlineInputBorder(
@@ -130,9 +222,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: size.height * 0.062,
                       width: size.width * 0.95,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(80.0),
-                          gradient: const LinearGradient(
-                              colors: [defaultColor, defaultColor])),
+                        borderRadius: BorderRadius.circular(80.0),
+                        gradient: const LinearGradient(
+                          colors: [
+                            defaultColor,
+                            defaultColor,
+                          ],
+                        ),
+                      ),
                       padding: const EdgeInsets.all(0),
                       child: Text(
                         SetText.login.toUpperCase(),
@@ -188,23 +285,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-      _isVisible = !_isVisible;
-    });
-  }
-
-  void _login() async {
-    setState(() {
-      userId.text.isEmpty ? valUserId = true : valUserId = false;
-      password.text.isEmpty ? valPassword = true : valPassword = false;
-    });
-    if (userId.text.isNotEmpty && password.text.isNotEmpty) {
-      // hit ke BE
-      _alert(alertCheck = true);
-    } else {
-      _alert(alertCheck = false);
-    }
+    setState(
+      () {
+        _obscureText = !_obscureText;
+        _isVisible = !_isVisible;
+      },
+    );
   }
 
   void _alert(alertCheck) async {
@@ -225,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: size.height * 0.01),
             Text(
-              alertCheck ? SetText.a_descsuccess : SetText.a_descfield,
+              alertCheck ? SetText.login_descsuccess : SetText.a_descfield,
               textAlign: TextAlign.left,
               style: alerttextdescStyle,
             ),
@@ -241,8 +327,12 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: () => {
               Navigator.pop(context),
             },
-            gradient:
-                const LinearGradient(colors: [defaultColor, defaultColor]),
+            gradient: const LinearGradient(
+              colors: [
+                defaultColor,
+                defaultColor,
+              ],
+            ),
           )
         ]).show();
   }
